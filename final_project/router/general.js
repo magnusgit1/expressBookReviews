@@ -6,8 +6,22 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const username = req.body.username;
+  const password = req.body.password;
+
+  let usersWithName = users.filter((usr) =>{
+    return usr.username === username;
+  });
+  if(username && password){
+    if(usersWithName === 0){
+      users.push({"username": username, "password": password});
+      return res.status(200).json({message: "User successfully registered."});
+    } else{
+      return res.status(404).json({message: "User already exists."});
+    }
+  } else{
+    res.status(404).json({message: "Username or password missing"});
+  }
 });
 
 // Get the book list available in the shop
@@ -31,22 +45,43 @@ public_users.get('/isbn/:isbn',function (req, res) {
 public_users.get('/author/:author',function (req, res) {
   const author = req.params.author;
   let booksArr = Object.values(books);
-  let book = booksArr.filter((bk) => {return bk.author === author;});
+  let book = booksArr.filter((bk) => {
+    return bk.author === author;
+  });
   if(book.length >= 1){
     res.send(JSON.stringify(book, null, 4));
+  } else{
+    res.send("No books for the given author");
   }
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const title = req.params.title;
+  let booksArr = Object.values(books);
+  let book = booksArr.filter((bk) =>{
+    return bk.title === title;
+  });
+  if(book.length >= 1){
+    res.send(JSON.stringify(book, null, 4));
+  } else{
+    res.send("No books for the given title");
+  }
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  
+  const isbn = req.params.isbn;
+  let booksArr = Object.values(books);
+  let book = booksArr.filter((bk) =>{
+    return bk.isbn === isbn;
+  });
+  if(book.length >= 1){
+    res.send(JSON.stringify(book[reviews], null, 4));
+  } else{
+    res.send("No reviews for the given isbn");
+  }
 });
 
 module.exports.general = public_users;
